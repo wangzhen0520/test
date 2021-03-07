@@ -1,0 +1,79 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            // 任务一： 创建 build 文件夹
+            "type": "shell",
+            "label": "CreateBuildDir", // lable 标记任务名称
+            "command": "mkdir", // 命令
+            // 传给上面命令的参数，这里是传给 Unix 系统的参数，windows下稍有不用，下边有
+            "args": [
+                "-p",
+                "build"
+            ],
+            "windows": {
+                "options": {
+                    "shell": {
+                        "executable": "powershell.exe"
+                    }
+                },
+                "args": [ // 对于windows系统，传的参数
+                    "-Force",
+                    "build"
+                ]
+            },
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+        },
+        // 任务二： Cmake
+        // 在 build 文件夹中调用 cmake 进行项目配置
+        // 如果想配置比如 release 还是 debug 可以添加参数或者在
+        // CMakeLists.txt中设置也行
+        {
+            "type": "shell",
+            "label": "cmakeRun", // 给这个任务起个名字
+            // 这里的cmake，用我后面小程序创建的结果填的是全路径，
+            // 命令写全路径，则路径中不能包含带空格
+            // 如果你添加了环境变量，那么直接填写命令即可，也不会有
+            // 路径是否包含空格的问题（下面的命令同理）
+            "command": "cmake",
+            "args": [
+                "-DCMAKE_MAKE_PROGRAM=E:\\Software\\mingw64\\bin\\mingw32-make.exe", // MinGW目录下bin目录下的mingw32-make.exe
+                "-G",
+                // 不使用-G "Unix Makefiles" 参数可能会编译成了VS用的工程文件
+                // 之所以三个斜杠，是因为vscode终端自己还要转义一次
+                // 2021-01-21更新：我在32位的win7上发现，vscode自己又不转义了
+                // 所以如果以下三个斜杠不行的话，大家手动改成一个斜杠就好，即\"Unix Makefiles\"
+                // 后面我给的小程序默认写的是3个
+                "\\\"Unix Makefiles\\\"",
+                "../" // ../ 表示build文件夹的上级目录，CMakeLists.txt就放在上级目录中
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
+            "dependsOn": [
+                "CreateBuildDir" // 表示在 创建目录 任务结束后进行
+            ]
+        },
+        // 任务三： make编译
+        {
+            "type": "shell",
+            "label": "makeRun",
+            "command": "mingw32-make", // 这个也是MinGW目录下bin目录下的mingw32-make.exe，如果添加了环境变量，这里直接写mingw32-make.exe
+            "args": [],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            }, // 注意这里是编译到了项目文件夹下的 build 文件夹里面，这里就解释了
+            // 为什么 launch.json 中 program 路径要那么设置了。
+            "dependsOn": [
+                "cmakeRun" // 表示在Cmake任务结束后进行
+            ]
+        }
+    ]
+}
