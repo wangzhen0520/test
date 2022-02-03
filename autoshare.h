@@ -7,4 +7,4 @@
 
 int autoshared(int argc, char* argv[]);
 
-#endif //TEST_AUTOSHARE_H
+#endif  // TEST_AUTOSHARE_H

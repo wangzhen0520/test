@@ -10,4 +10,4 @@ int test_json(int argc, char* argv[]);
 /// 注意：此函数只增加、修改dest配置项，但不会删减dest中配置项。
 void replaceConfig(Json::Value& dest, const Json::Value& src, bool fillEmptyOnly = false);
 
-#endif // TEST_JSON_H
+#endif  // TEST_JSON_H

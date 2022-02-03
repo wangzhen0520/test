@@ -7,4 +7,4 @@
 
 int test_letcode(int argc, char* argv[]);
 
-#endif // TEST_LETCODE_H
+#endif  // TEST_LETCODE_H

@@ -7,4 +7,4 @@
 
 int test_others(int argc, char* argv[]);
 
-#endif // TEST_OTHERS_H
+#endif  // TEST_OTHERS_H

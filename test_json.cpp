@@ -1,7 +1,8 @@
+#include <algorithm>
 #include <fstream>
 #include <iostream>
-#include <algorithm>
 #include <string>
+
 
 #include "test_json.h"
 
@@ -44,8 +45,7 @@ std::string getFirstGradeConfigName(const char* name)
     std::string findStr = ".[]";
     std::string retVal = name;
 
-    std::string::iterator iter = std::find_first_of(retVal.begin(), retVal.end(),
-        findStr.begin(), findStr.end());
+    std::string::iterator iter = std::find_first_of(retVal.begin(), retVal.end(), findStr.begin(), findStr.end());
     if (iter != retVal.end()) {
         retVal = std::string(retVal.begin(), iter);
     }
@@ -61,21 +61,21 @@ void replaceConfig(Json::Value& dest, const Json::Value& src, bool fillEmptyOnly
         for (unsigned int index = 0; index < size; ++index) {
             replaceConfig(dest[index], src[index]);
         }
-    } else if (src.type() == Json::objectValue) {
+    }
+    else if (src.type() == Json::objectValue) {
         Json::Value::Members members(src.getMemberNames());
-        for (Json::Value::Members::iterator it = members.begin();
-             it != members.end();
-             ++it) {
+        for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it) {
             const std::string& name = *it;
 
             replaceConfig(dest[name], src[name]);
         }
-    } else if (!fillEmptyOnly || dest.type() == Json::nullValue) {
+    }
+    else if (!fillEmptyOnly || dest.type() == Json::nullValue) {
         dest = src;
     }
 }
 
-int jsonMerge(std::string &srcfile, std::string &customefile)
+int jsonMerge(std::string& srcfile, std::string& customefile)
 {
     Json::Value m_configAll = Json::nullValue;
     int ret = read_json(srcfile, m_configAll);
@@ -129,12 +129,14 @@ bool XorReplaceConfig(Json::Value& result, const Json::Value& table1, Json::Valu
             return (result.type() == Json::nullValue ? false : true);
         }
         if (!(table1.type() == Json::uintValue && table2.type() == Json::intValue)) {
-            result = Json::Value::null; //需要增加这个函数调用，防止部分json表由于类型不一致，引起死机
+            result = Json::Value::null;  //需要增加这个函数调用，防止部分json表由于类型不一致，引起死机
             result = table1;
 
             table2 = table1;
         }
-        return ((result.type() == Json::nullValue) && (table1 != Json::nullValue) && (table2 != Json::nullValue) ? false : true);
+        return ((result.type() == Json::nullValue) && (table1 != Json::nullValue) && (table2 != Json::nullValue) ?
+                    false :
+                    true);
     }
 
     if (result.type() == Json::nullValue) {
@@ -143,13 +145,16 @@ bool XorReplaceConfig(Json::Value& result, const Json::Value& table1, Json::Valu
 
             table2 = table1;
         }
-    } else if (table1.type() == Json::arrayValue) {
+    }
+    else if (table1.type() == Json::arrayValue) {
         if (table1.size() != table2.size()) {
             result = table1;
 
             table2 = table1;
 
-            return ((result.type() == Json::nullValue) && (table1 != Json::nullValue) && (table2 != Json::nullValue) ? false : true);
+            return ((result.type() == Json::nullValue) && (table1 != Json::nullValue) && (table2 != Json::nullValue) ?
+                        false :
+                        true);
         }
 
         bool ret;
@@ -162,32 +167,34 @@ bool XorReplaceConfig(Json::Value& result, const Json::Value& table1, Json::Valu
             }
         }
 
-        if (resIndex < table1.size()) { //若有效结果少于数组长度
+        if (resIndex < table1.size()) {  //若有效结果少于数组长度
             result.resize(resIndex);
         }
-    } else if (table1.type() == Json::objectValue) { //Object 类型若是删减配置项，不会影响当前配置，不将其删除。
+    }
+    else if (table1.type() == Json::objectValue) {  // Object 类型若是删减配置项，不会影响当前配置，不将其删除。
         bool ret;
         Json::Value::Members members(table1.getMemberNames());
         for (Json::Value::Members::iterator it = members.begin(); it != members.end(); ++it) {
             const std::string& name = *it;
             ret = XorReplaceConfig(result[name], table1[name], table2[name]);
-            if (!ret) { //递归后若为Json::nullValue，则将该member删除
+            if (!ret) {  //递归后若为Json::nullValue，则将该member删除
                 result.removeMember(name);
             }
         }
-        if (result.size() == 0) { //Object递归后若没有成员，则将该Object置null,供上层删除此成员
+        if (result.size() == 0) {  // Object递归后若没有成员，则将该Object置null,供上层删除此成员
             result = Json::nullValue;
         }
     }
 
-    return ((result.type() == Json::nullValue) && (table1 != Json::nullValue) && (table2 != Json::nullValue) ? false : true);
+    return ((result.type() == Json::nullValue) && (table1 != Json::nullValue) && (table2 != Json::nullValue) ? false :
+                                                                                                               true);
 }
 
 int test_json(int argc, char* argv[])
 {
     std::cout << "test_json" << std::endl;
 
-#if 1
+#if 0
     std::string srcfile("");
     std::string customefile("");
     if (argc == 3) {

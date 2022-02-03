@@ -10,9 +10,9 @@ int main(int argc, char* argv[])
 {
     std::cout << "Hello, World!" << std::endl;
 
-    // (void)test_letcode(argc, argv);
+    (void)test_letcode(argc, argv);
 
-    // (void)test_others(argc, argv);
+    (void)test_others(argc, argv);
 
     (void)test_json(argc, argv);
 
