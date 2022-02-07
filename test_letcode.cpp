@@ -29,5 +29,17 @@ int test_letcode(int argc, char* argv[])
     extern void test_uf2();
     test_uf2();
 
+    extern void test_tree_104();
+    test_tree_104();
+
+    extern void test_tree_114();
+    test_tree_114();
+
+    extern void test_tree_654();
+    test_tree_654();
+
+    extern void test_tree_105_106();
+    test_tree_105_106();
+
     return 0;
 }
