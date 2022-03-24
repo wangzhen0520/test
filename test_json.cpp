@@ -2,9 +2,10 @@
 
 #include <iostream>
 
-#include "jsonMerge.h"
+// #include "jsonMerge.h"
+#include "json.h"
 
-int test_json(int argc, char* argv[])
+int test_json(int argc, char *argv[])
 {
     std::cout << "test_json" << std::endl;
 
@@ -20,6 +21,13 @@ int test_json(int argc, char* argv[])
     }
 
     jsonMerge(srcfile, customefile);
+#endif
+
+#if 1
+    struct json_object *new_obj;
+    new_obj = json_tokener_parse("[\"abc\",null,\"def\",12]");
+    std::cout << "new_obj_.to.string()=" << json_object_to_json_string(new_obj) << std::endl;
+    json_object_put(new_obj);
 #endif
 
     return 0;

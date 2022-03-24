@@ -30,6 +30,7 @@ INCLUDE_DIRECTORIES(
   .
   ${JSON_PATH}
   ${JSON_MERGE_PATH}
+  ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/json-c-build/
 )
 
 # 添加源代码文件夹, 自动扫描所有文件
@@ -37,10 +38,23 @@ AUX_SOURCE_DIRECTORY(. DIR_SRCS)
 AUX_SOURCE_DIRECTORY(./leetcode DIR_SRCS)
 AUX_SOURCE_DIRECTORY(./jsonmerge DIR_SRCS)
 
+include(FetchContent)
+
+# FetchContent_Declare(json-c
+#   GIT_REPOSITORY https://github.com/json-c/json-c.git
+#   GIT_TAG master
+#   CONFIGURE_COMMAND ""
+#   BUILD_COMMAND ""
+#   )
+FetchContent_Declare(json-c
+  URL https://codeload.github.com/json-c/json-c/zip/refs/heads/json-c-0.15)
+
+FetchContent_MakeAvailable(json-c)
+
 # 添加子工程
 add_subdirectory(jsoncpp-0.y.z)
 
 add_executable(${TRAGET_NAME} ${DIR_SRCS})
 
 # 链接子工程
-target_link_libraries(${TRAGET_NAME} jsoncpp)
+target_link_libraries(${TRAGET_NAME} PRIVATE jsoncpp json-c)
