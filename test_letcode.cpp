@@ -41,5 +41,35 @@ int test_letcode(int argc, char* argv[])
     extern void test_tree_105_106();
     test_tree_105_106();
 
+    extern void test_tree_537();
+    test_tree_537();
+
+    extern void test_tree_55();
+    test_tree_55();
+
+    extern void test_tree_198();
+    test_tree_198();
+
+    extern void test_tree_73();
+    test_tree_73();
+
+    extern void test_tree_74();
+    test_tree_74();
+
+    extern void test_tree_79();
+    test_tree_79();
+
+    extern void test_tree_34();
+    test_tree_34();
+
+    extern void test_tree_153();
+    test_tree_153();
+
+    extern void test_tree_162();
+    test_tree_162();
+
+    extern void test_tree_82();
+    test_tree_82();
+
     return 0;
 }

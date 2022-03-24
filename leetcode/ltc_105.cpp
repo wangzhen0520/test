@@ -55,7 +55,7 @@ public:
 
 void test_tree_105_106()
 {
-// #define test
+#define test
 #ifdef test
     return;
 #else
