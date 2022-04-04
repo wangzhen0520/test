@@ -28,6 +28,7 @@ SET(JSON_MERGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/jsonmerge)
 # 头文件包含目录
 INCLUDE_DIRECTORIES(
   .
+  ./include
   ${JSON_PATH}
   ${JSON_MERGE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/json-c-build/
