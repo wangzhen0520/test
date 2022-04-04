@@ -71,5 +71,9 @@ int test_letcode(int argc, char* argv[])
     extern void test_tree_82();
     test_tree_82();
 
+    for (const auto &iter : Singleton<LtcContainer>::instance()->GetAction()) {
+        iter();
+    }
+    
     return 0;
 }
