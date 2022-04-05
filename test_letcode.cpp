@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+#include "action.h"
+
 using namespace std;
 
 int test_letcode(int argc, char* argv[])

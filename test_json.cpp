@@ -23,7 +23,7 @@ int test_json(int argc, char *argv[])
     jsonMerge(srcfile, customefile);
 #endif
 
-#if 1
+#if 0
     struct json_object *new_obj;
     new_obj = json_tokener_parse("[\"abc\",null,\"def\",12]");
     std::cout << "new_obj_.to.string()=" << json_object_to_json_string(new_obj) << std::endl;

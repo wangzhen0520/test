@@ -13,7 +13,7 @@ elseif(UNIX)
 endif()
 # 这段代码可以区分操作系统
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 14)
 set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 get_filename_component(CURDIR ${CMAKE_CURRENT_SOURCE_DIR} NAME ABSOLUTE)
@@ -23,13 +23,16 @@ set(TRAGET_NAME ${CURDIR})
 
 # 设置目录
 SET(JSON_PATH ${CMAKE_CURRENT_SOURCE_DIR}/jsoncpp-0.y.z)
+SET(JSON_C_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/json-c-src/)
 SET(JSON_MERGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/jsonmerge)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/build/)
 
 # 头文件包含目录
 INCLUDE_DIRECTORIES(
   .
   ./include
   ${JSON_PATH}
+  ${JSON_C_PATH}
   ${JSON_MERGE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/json-c-build/
 )
@@ -54,6 +57,8 @@ FetchContent_MakeAvailable(json-c)
 
 # 添加子工程
 add_subdirectory(jsoncpp-0.y.z)
+
+link_directories(${LIBRARY_OUTPUT_PATH})
 
 add_executable(${TRAGET_NAME} ${DIR_SRCS})
 
