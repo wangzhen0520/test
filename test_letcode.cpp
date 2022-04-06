@@ -1,7 +1,5 @@
 #include "test_letcode.h"
 
-#include <iostream>
-
 #include "action.h"
 
 using namespace std;

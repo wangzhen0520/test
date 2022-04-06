@@ -3,8 +3,8 @@
 
 #include "utils.h"
 
-#include <functional>
 #include <iostream>
+#include <functional>
 #include <vector>
 
 using ActionFunc = std::function<void()>;
