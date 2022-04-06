@@ -4,7 +4,7 @@
 
 using namespace std;
 
-int test_letcode(int argc, char* argv[])
+int test_letcode(int argc, char *argv[])
 {
     std::cout << "test_letcode" << std::endl;
 
@@ -74,6 +74,6 @@ int test_letcode(int argc, char* argv[])
     for (const auto &iter : Singleton<LtcContainer>::instance()->GetAction()) {
         iter();
     }
-    
+
     return 0;
 }
