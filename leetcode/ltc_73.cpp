@@ -26,11 +26,8 @@ n == matrix[0].length
 链接：https://leetcode-cn.com/problems/set-matrix-zeroes
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
+#include "action.h"
 #include <algorithm>
-#include <iostream>
-#include <ostream>
-#include <vector>
-#include <map>
 
 using namespace std;
 
@@ -88,3 +85,4 @@ void test_tree_73()
         cout << endl;
     }
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_tree_73);

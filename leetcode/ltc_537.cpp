@@ -1,4 +1,4 @@
-#include <iostream>
+#include "action.h"
 #include <sec_api/stdlib_s.h>
 #include <stdlib.h>
 #include <string>
@@ -60,3 +60,4 @@ void test_tree_537()
 
     cout << ret << endl;
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_tree_537);

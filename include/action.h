@@ -6,24 +6,30 @@
 #include <iostream>
 #include <functional>
 #include <vector>
+#include <map>
+
+using ACTION_TYPE = enum {
+    ACTION_KS,
+    ACTION_LTC,
+};
 
 using ActionFunc = std::function<void()>;
 
-#define LTC_REGISTER_ACTION(func) \
-    static RegistAction(REGIST_OCCURRENCES)(func)
+#define LTC_REGISTER_ACTION(type, func) \
+    static RegistAction(REGIST_OCCURRENCES)(type, func)
 
 class LtcContainer {
 public:
-    void RegisterAction(ActionFunc func)
+    void RegisterAction(ACTION_TYPE type, ActionFunc func)
     {
         std::unique_lock<std::mutex> _(m_actionMutx);
-        m_action.push_back(func);
+        m_action[type].push_back(func);
     }
 
-    std::vector<ActionFunc> &GetAction()
+    std::vector<ActionFunc> &GetAction(ACTION_TYPE type)
     {
         std::unique_lock<std::mutex> _(m_actionMutx);
-        return m_action;
+        return m_action[type];
     }
 
 private:
@@ -31,14 +37,14 @@ private:
 
 private:
     std::mutex m_actionMutx;
-    std::vector<ActionFunc> m_action;
+    std::map<ACTION_TYPE, std::vector<ActionFunc>> m_action;
 };
 
 class RegistAction {
 public:
-    RegistAction(ActionFunc func)
+    RegistAction(ACTION_TYPE type, ActionFunc func)
     {
-        Singleton<LtcContainer>::instance()->RegisterAction(func);
+        Singleton<LtcContainer>::instance()->RegisterAction(type, func);
     }
     ~RegistAction() {}
 };

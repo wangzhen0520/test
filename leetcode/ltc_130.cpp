@@ -19,8 +19,8 @@
 链接：https://leetcode-cn.com/problems/surrounded-regions
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
-#include <iostream>
-#include <vector>
+#include "action.h"
+#include <algorithm>
 
 #include "union_find.h"
 
@@ -114,3 +114,4 @@ void test_uf1()
     su.solve(nums);
     su.show(nums);
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_uf1);

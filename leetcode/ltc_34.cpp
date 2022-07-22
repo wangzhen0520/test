@@ -30,11 +30,8 @@
 nums 是一个非递减数组
 -109 <= target <= 109
 */
+#include "action.h"
 #include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <ostream>
-#include <vector>
 
 using namespace std;
 
@@ -201,3 +198,5 @@ void test_tree_34()
     int ret = su.search(nums, target);
     cout << ret << endl;
 }
+
+LTC_REGISTER_ACTION(ACTION_LTC, test_tree_34);

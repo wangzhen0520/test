@@ -1,4 +1,4 @@
-#include <iostream>
+#include "action.h"
 #include <stack>
 
 using namespace std;
@@ -38,3 +38,4 @@ void test_isvalid()
         cout << (isValid(s) ? "true" : "false") << endl;
     }
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_isvalid);

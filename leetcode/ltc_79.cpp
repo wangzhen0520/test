@@ -34,11 +34,8 @@ board 和 word 仅由大小写英文字母组成
 链接：https://leetcode-cn.com/problems/word-search
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
+#include "action.h"
 #include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <ostream>
-#include <vector>
 
 using namespace std;
 
@@ -103,3 +100,4 @@ void test_tree_79()
 
     cout << (ret ? "true" : "false") << endl;
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_tree_79);

@@ -24,6 +24,8 @@
 */
 #include "list_node.h"
 
+#include "action.h"
+
 #include <vector>
 
 using namespace std;
@@ -54,3 +56,5 @@ void test_tree_82()
     auto ret = su.deleteDuplicates(head);
     PrintListNode(ret);
 }
+
+LTC_REGISTER_ACTION(ACTION_LTC, test_tree_82);

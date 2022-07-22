@@ -36,11 +36,8 @@ n == nums.length
 nums 中的所有整数 互不相同
 nums 原来是一个升序排序的数组，并进行了 1 至 n 次旋转
 */
+#include "action.h"
 #include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <ostream>
-#include <vector>
 
 using namespace std;
 
@@ -83,3 +80,4 @@ void test_tree_153()
     int ret = su.findMin(nums);
     cout << ret << endl;
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_tree_153);

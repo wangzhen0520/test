@@ -29,11 +29,8 @@
 -231 <= nums[i] <= 231 - 1
 对于所有有效的 i 都有 nums[i] != nums[i + 1]
 */
+#include "action.h"
 #include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <ostream>
-#include <vector>
 
 using namespace std;
 
@@ -77,3 +74,4 @@ void test_tree_162()
     int ret = su.findPeakElement(nums);
     cout << ret << endl;
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_tree_162);

@@ -1,5 +1,4 @@
-#include <iostream>
-#include <vector>
+#include "action.h"
 #include <unordered_map>
 
 using namespace std;
@@ -61,3 +60,4 @@ void test_twosum()
         cout << iter << endl;
     }
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_twosum);

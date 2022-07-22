@@ -1,8 +1,5 @@
+#include "action.h"
 #include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <ostream>
-#include <vector>
 
 #include "tree_node.h"
 
@@ -77,3 +74,4 @@ void test_tree_105_106()
     }
     cout << endl;
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_tree_105_106);

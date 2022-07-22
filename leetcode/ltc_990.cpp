@@ -31,8 +31,7 @@
 链接：https://leetcode-cn.com/problems/satisfiability-of-equality-equations
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
-#include <iostream>
-#include <vector>
+#include "action.h"
 
 #include "union_find.h"
 
@@ -74,3 +73,4 @@ void test_uf2()
     Solution su;
     cout << (su.equationsPossible(equations) ? "true" : "false") << endl;
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_uf2);

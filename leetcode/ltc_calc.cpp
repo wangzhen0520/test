@@ -1,8 +1,6 @@
-#include <iostream>
-#include <sstream>
+#include "action.h"
 #include <stack>
-#include <vector>
-
+#include <sstream>
 
 using namespace std;
 
@@ -154,3 +152,4 @@ void test_calc()
     midtopost(in, vec);
     cout << calc(vec) << endl;
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_calc);

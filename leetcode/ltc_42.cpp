@@ -19,9 +19,7 @@
 链接：https://leetcode-cn.com/problems/trapping-rain-water
 著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
 */
-
-#include <iostream>
-#include <vector>
+#include "action.h"
 
 using namespace std;
 
@@ -67,3 +65,4 @@ void test_trap()
 
     cout << ret << endl;
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_trap);

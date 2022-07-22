@@ -1,6 +1,4 @@
-#include <iostream>
-#include <string>
-#include <vector>
+#include "action.h"
 
 using namespace std;
 
@@ -50,3 +48,4 @@ void test_substring()
     s = "ab";
     cout << lengthOfLongestSubstring(s) << endl;
 }
+LTC_REGISTER_ACTION(ACTION_LTC, test_substring);
