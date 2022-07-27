@@ -8,14 +8,14 @@
             "name": "(gdb) 启动",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/${workspaceRootFolderName}.exe",
+            "program": "${workspaceFolder}/build/${workspaceRootFolderName}.exe", // for win
             "args": ["json.txt", "jsonCT.txt"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
-            "miDebuggerPath": "D:\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\gdb.exe",
+            "miDebuggerPath": "D:\\mingw-w64\\x86_64-8.1.0-posix-seh-rt_v6-rev0\\mingw64\\bin\\gdb.exe", // for win
             "setupCommands": [
                 {
                     "description": "为 gdb 启用整齐打印",
@@ -27,6 +27,30 @@
             // 比如这里 要完成 makeRun 这个tasks任务（重新生成程序）
             // 这里的 makeRun 是 tasks.json 中 lable 标记的任务名称
             "preLaunchTask": "makeRun"
+        },
+        {
+            "name": "(gdb) 启动linux",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/${workspaceRootFolderName}",
+            "args": ["json.txt", "jsonCT.txt"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb",
+            "setupCommands": [
+                {
+                    "description": "为 gdb 启用整齐打印",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            // preLaunchTask 表示在 执行调试前 要完成的任务
+            // 比如这里 要完成 makeRun 这个tasks任务（重新生成程序）
+            // 这里的 makeRun 是 tasks.json 中 lable 标记的任务名称
+            "preLaunchTask": "makeRun_linux"
         }
     ]
 }
