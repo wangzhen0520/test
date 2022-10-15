@@ -73,7 +73,7 @@ void test_ltc_43()
 #else
     cout << __func__ << endl;
 #endif
-    TimeCost tc;
+    TimeCost tc("multiply");
 
     string str1 = "123";
     string str2 = "45";

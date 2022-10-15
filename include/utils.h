@@ -1,10 +1,11 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <sys/time.h>
 #include <mutex>
 #include <memory>
+#include <string>
 #include <iostream>
-#include <sys/time.h>
 
 template <typename T>
 class Singleton {
@@ -43,25 +44,57 @@ std::mutex Singleton<T>::instanceMutex_;
     friend class std::shared_ptr<type>; \
     friend class Singleton<type>;
 
-class TimeCost
-{
-private:
-    struct timeval start_;
-    struct timeval end_;
+class TimeCost {
 public:
-    TimeCost() {
-        gettimeofday(&start_, NULL);
-    };
-    void OperateCost(const std::string &opr) {
-        gettimeofday(&end_, NULL);
-        int cost = (end_.tv_sec - start_.tv_sec) * 1000 + (end_.tv_usec - start_.tv_usec) / 1000;
-        std::cout << opr << " cost time: " << cost << "ms" << std::endl;
+    explicit TimeCost(const std::string &funcName)
+        : m_funcName(funcName), m_start{}, m_end{}, m_operStart{}, m_operEnd{}, m_interval(0)
+    {
+        gettimeofday(&m_start, nullptr);
+        m_operStart = m_start;
     }
-    ~TimeCost() {
-        gettimeofday(&end_, NULL);
-        int cost = (end_.tv_sec - start_.tv_sec) * 1000 + (end_.tv_usec - start_.tv_usec) / 1000;
-        std::cout << "cost time: " << cost << "ms" << std::endl;
-    };
-};
 
+    TimeCost(const std::string &funcName, uint32_t interval)
+        : m_funcName(funcName), m_start{}, m_end{}, m_operStart{}, m_operEnd{}, m_interval(interval)
+    {
+        gettimeofday(&m_start, nullptr);
+        m_operStart = m_start;
+    }
+
+    ~TimeCost()
+    {
+        gettimeofday(&m_end, nullptr);
+
+        int64_t cost = (int64_t)((m_end.tv_sec - m_start.tv_sec) * 1000) + (m_end.tv_usec - m_start.tv_usec) / 1000;
+
+        if (cost > m_interval) {
+            std::cout << m_funcName << " cost:" << cost << " ms" << std::endl;
+        }
+    }
+
+    /*
+     * 打印单个操作的耗时
+     * @param operatorName 操作名称
+     */
+    void OperatorCost(const std::string &operatorName)
+    {
+        gettimeofday(&m_operEnd, nullptr);
+
+        int64_t cost = (int64_t)((m_operEnd.tv_sec - m_operStart.tv_sec) * 1000) +
+                       (m_operEnd.tv_usec - m_operStart.tv_usec) / 1000;
+
+        if (cost > m_interval) {
+            std::cout << m_funcName << " " << operatorName << " cost:" << cost << " ms" << std::endl;
+        }
+
+        m_operStart = m_operEnd;
+    }
+
+private:
+    std::string m_funcName;
+    struct timeval m_start;
+    struct timeval m_end;
+    struct timeval m_operStart;
+    struct timeval m_operEnd;
+    uint32_t m_interval;  // 超时打印
+};
 #endif  // UTILS_H

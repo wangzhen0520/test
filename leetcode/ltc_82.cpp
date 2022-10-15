@@ -50,7 +50,7 @@ void test_tree_82()
     // 旋转数组查找
     vector<int> nums = {1, 2, 3, 3, 4, 4, 5};
 
-    auto head = InitListNode(nums);
+    auto head = MakeList(nums);
     PrintListNode(head);
 
     auto ret = su.deleteDuplicates(head);

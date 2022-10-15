@@ -154,7 +154,7 @@ void test_ltc_15()
 
     vector<int> nums = {-1,0,1,2,-1,-4};
     Solution su;
-    TimeCost tc;
+    TimeCost tc("threeSum");
     auto ret = su.threeSum(nums);
     // tc.OperateCost("threeSum");
     for (size_t i = 0; i < ret.size(); i++) {

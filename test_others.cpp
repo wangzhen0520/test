@@ -241,7 +241,7 @@ int test_others(int argc, char *argv[])
     praseJPG();
 #endif
 
-#if 1
+#if 0
     std::string str = "abeaacda";
     cout << str << endl;
     test_for_duplicate(str);
