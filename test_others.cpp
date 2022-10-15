@@ -3,11 +3,12 @@
 //
 #include "test_others.h"
 
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <memory>
+#include <set>
 #include <vector>
-
 
 using namespace std;
 
@@ -24,13 +25,13 @@ int praseJPG()
 
     std::unique_ptr<uint8_t[]> pbData(new uint8_t[length + 5]);  // 多申请5个字节, 是以下判断的时候需要用
 
-    fs.read((char*)pbData.get(), length);
+    fs.read((char *)pbData.get(), length);
     fs.close();
 
     cout << "length: " << length << endl;
 
     bool bStop = false;
-    uint8_t* pbStart = pbData.get();
+    uint8_t *pbStart = pbData.get();
     while (!bStop) {
         uint8_t b1 = pbStart[0];
         uint8_t b2 = pbStart[1];
@@ -126,7 +127,37 @@ int praseJPG()
     return 0;
 }
 
-int test_others(int argc, char* argv[])
+void test_for_duplicate(std::string &str)
+{
+    // int i, j, val, temp;
+    // j = temp = 0;
+
+    // for (i = 0; s[i]; i++) {
+    //     val = s[i] - 'a';
+    //     if ((temp & (1 << val)) == 0) {
+    //         s[j++] = s[i];
+    //         temp |= 1 << val;
+    //     }
+    // }
+    // s[j] = '\0';
+
+    sort(str.begin(), str.end());
+    str.erase(unique(str.begin(), str.end()), str.end());
+
+    // set<char> ss;
+    // for (int i = 0; i < str.length(); i++) {
+    //     ss.insert(str[i]);
+    // }
+
+    // str.clear();
+    // for (const auto &it : ss) {
+    //     if (it == '\0')
+    //         break;
+    //     str.push_back(it);
+    // }
+}
+
+int test_others(int argc, char *argv[])
 {
     std::cout << "test_others" << std::endl;
 
@@ -208,6 +239,13 @@ int test_others(int argc, char* argv[])
 
 #if 0
     praseJPG();
+#endif
+
+#if 1
+    std::string str = "abeaacda";
+    cout << str << endl;
+    test_for_duplicate(str);
+    cout << str << endl;
 #endif
     return 0;
 }

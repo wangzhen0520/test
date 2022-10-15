@@ -48,7 +48,7 @@ public:
 
 void test_ltc_875()
 {
-// #define test
+#define test
 #ifdef test
     return;
 #else
