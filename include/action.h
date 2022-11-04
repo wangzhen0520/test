@@ -11,6 +11,7 @@
 using ACTION_TYPE = enum {
     ACTION_KS,
     ACTION_LTC,
+    ACTION_OTHERS,
 };
 
 using ActionFunc = std::function<void()>;

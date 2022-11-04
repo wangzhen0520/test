@@ -35,12 +35,17 @@ INCLUDE_DIRECTORIES(
   ${JSON_C_PATH}
   ${JSON_MERGE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/json-c-build/
+  ${CMAKE_CURRENT_SOURCE_DIR}/reflector
+  ${CMAKE_CURRENT_SOURCE_DIR}/others
 )
 
 # 添加源代码文件夹, 自动扫描所有文件
 AUX_SOURCE_DIRECTORY(. DIR_SRCS)
 AUX_SOURCE_DIRECTORY(./leetcode DIR_SRCS)
 AUX_SOURCE_DIRECTORY(./jsonmerge DIR_SRCS)
+AUX_SOURCE_DIRECTORY(./reflector DIR_SRCS)
+AUX_SOURCE_DIRECTORY(./reflector/framework DIR_SRCS)
+AUX_SOURCE_DIRECTORY(./others DIR_SRCS)
 
 include(FetchContent)
 
