@@ -344,7 +344,7 @@ int test_deep_copy(int argc, char **argv)
     printf("------------------------------------------------\n");
     printf("%s\n", json_object_to_json_string_ext(dst1, JSON_C_TO_STRING_PRETTY));
     printf("------------------------------------------------\n");
-	
+
     // int rv = json_c_visit(dst1, 0, NULL, NULL);
 
     json_object *dest_with_serializer = json_object_object_get(dst1, "with_serializer");
@@ -660,6 +660,8 @@ static int err_return(json_object *jso, int flags, json_object *parent_jso, cons
 
 int test_json(int argc, char *argv[])
 {
+    std::cout << "test_json" << std::endl;
+
 #define test
 #ifdef test
     return 0;
@@ -687,7 +689,7 @@ int test_json(int argc, char *argv[])
     std::cout << "new_obj_.to.string()=" << json_object_to_json_string(new_obj) << std::endl;
     json_object_put(new_obj);
 #endif
-    
+
     // test_json_c();
     test_json_c1();
 

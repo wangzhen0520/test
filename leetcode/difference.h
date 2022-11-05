@@ -1,5 +1,5 @@
-#ifndef difference_h
-#define difference_h
+#ifndef DIFFERENCE_H
+#define DIFFERENCE_H
 
 #include <vector>
 
@@ -40,4 +40,4 @@ private:
     std::vector<int> diff;
 };
 
-#endif // difference_h
+#endif // DIFFERENCE_H

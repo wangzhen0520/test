@@ -35,8 +35,7 @@ INCLUDE_DIRECTORIES(
   ${JSON_C_PATH}
   ${JSON_MERGE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/json-c-build/
-  ${CMAKE_CURRENT_SOURCE_DIR}/reflction
-  ${CMAKE_CURRENT_SOURCE_DIR}/reflction/framework
+  ${CMAKE_CURRENT_SOURCE_DIR}/reflector
 )
 
 # 添加源代码文件夹, 自动扫描所有文件

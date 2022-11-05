@@ -1,3 +1,5 @@
+#include "binarySearch.h"
+
 #include <iostream>
 #include <vector>
 
@@ -23,7 +25,7 @@ int solution(int[] nums, int target) {
     int left = ...;
     // 问自己：自变量 x 的最大值是多少？
     int right = ... + 1;
-    
+
     while (left < right) {
         int mid = left + (right - left) / 2;
         if (f(mid) == target) {
@@ -125,26 +127,4 @@ int right_bound(vector<int> &nums, int target)
     }
 
     return right;
-}
-
-
-class Solution {
-public:
-    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int newColor) {
-
-        return {{}};
-    }
-};
-
-void test_ltc_binSearch()
-{
-#define test
-#ifdef test
-    return;
-#else
-    cout << __FILE__ << ":" << __func__ << endl;
-#endif
-
-    Solution su;
-    // su.floodFill();
 }
