@@ -14,7 +14,7 @@ endif()
 # 这段代码可以区分操作系统
 
 set(CMAKE_CXX_STANDARD 14)
-set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
 get_filename_component(CURDIR ${CMAKE_CURRENT_SOURCE_DIR} NAME ABSOLUTE)
 set(TRAGET_NAME ${CURDIR})
@@ -35,8 +35,8 @@ INCLUDE_DIRECTORIES(
   ${JSON_C_PATH}
   ${JSON_MERGE_PATH}
   ${CMAKE_CURRENT_SOURCE_DIR}/build/_deps/json-c-build/
-  ${CMAKE_CURRENT_SOURCE_DIR}/reflector
-  ${CMAKE_CURRENT_SOURCE_DIR}/others
+  ${CMAKE_CURRENT_SOURCE_DIR}/reflction
+  ${CMAKE_CURRENT_SOURCE_DIR}/reflction/framework
 )
 
 # 添加源代码文件夹, 自动扫描所有文件
@@ -48,7 +48,6 @@ AUX_SOURCE_DIRECTORY(./reflector/framework DIR_SRCS)
 AUX_SOURCE_DIRECTORY(./others DIR_SRCS)
 
 include(FetchContent)
-
 # FetchContent_Declare(json-c
 #   GIT_REPOSITORY https://github.com/json-c/json-c.git
 #   GIT_TAG master
@@ -57,10 +56,10 @@ include(FetchContent)
 #   )
 FetchContent_Declare(json-c
   URL https://codeload.github.com/json-c/json-c/zip/refs/heads/json-c-0.15)
-
 FetchContent_MakeAvailable(json-c)
 
 # 添加子工程
+# add_subdirectory(json-c-0.15)
 add_subdirectory(jsoncpp-0.y.z)
 
 link_directories(${LIBRARY_OUTPUT_PATH})
