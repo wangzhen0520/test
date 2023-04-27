@@ -8,6 +8,39 @@ using namespace std;
 
 #define INPUT_BUFFER_LENGTH (1024)
 
+/*
+CRC16_CCITT：
+多项式x^16+x^12+x^5+1（0x1021），初始值0x0000，低位在前，高位在后，结果与0x0000异或；
+
+CRC16_CCITT_FALSE：
+多项式x^16+x^12+x^5+1（0x1021），初始值0xFFFF，低位在后，高位在前，结果与0x0000异或；
+
+CRC16_XMODEM：
+多项式x^16+x^12+x^5+1（0x1021），初始值0x0000，低位在后，高位在前，结果与0x0000异或；
+
+CRC16_X25：
+多项式x^16+x^12+x^5+1（0x1021），初始值0x0000，低位在前，高位在后，结果与0xFFFF异或；
+
+CRC16_MODBUS：
+多项式x^16+x^15+x^2+1（0x8005），初始值0xFFFF，低位在前，高位在后，结果与0x0000异或；
+
+CRC16_IBM：
+多项式x^16+x^15+x^2+1（0x8005），初始值0x0000，低位在前，高位在后，结果与0x0000异或；
+
+CRC16_MAXIM：
+多项式x^16+x^15+x^2+1（0x8005），初始值0x0000，低位在前，高位在后，结果与0xFFFF异或；
+
+CRC16_USB：
+多项式x^16+x^15+x^2+1（0x8005），初始值0xFFFF，低位在前，高位在后，结果与0xFFFF异或；
+
+CRC16的算法原理：
+1. 根据CRC16的标准选择初值CRCIn的值；
+2. 将数据的第一个字节与CRCIn高8位异或；
+3. 判断最高位，若该位为 0 左移一位，若为 1 左移一位再与多项式Hex码异或；
+4. 重复3直至8位全部移位计算结束；
+5. 重复将所有输入数据操作完成以上步骤，所得16位数即16位CRC校验码。
+*/
+
 static uint16_t MODBUS_CRC16_v1(const unsigned char *buf, unsigned int len)
 {
     uint16_t crc = 0xFFFF;
@@ -155,5 +188,4 @@ void test_crc(int argc, char *argv[])
         fncrc(buf, INPUT_BUFFER_LENGTH);
 }
 
-/* end-of-file */
 LTC_REGISTER_ACTION(ACTION_OTHERS, test_crc);
