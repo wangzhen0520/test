@@ -1,3 +1,5 @@
+#include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <time.h>
 #include <stdint.h>
@@ -183,6 +185,27 @@ void test_crc(int argc, char *argv[])
     n = atol(argv[2]);
 
     get_random_buffer(buf, INPUT_BUFFER_LENGTH);
+
+    for (int i = 0; i < sizeof(buf); i++) {
+        printf("%02x ", buf[i]);
+    }
+    printf("\n");
+
+    char buf2[INPUT_BUFFER_LENGTH * 2 + 1] = {0};
+    for (int i = 0; i < sizeof(buf); i++) {
+        char dh = '0' + ((buf[i] & 0xF0) >> 4);
+        char dl = '0' + (buf[i] & 0x0F);
+        if (dh > '9') {
+            dh = dh - '9' - 1 + 'A'; // 或者 dh= dh+ 7;
+        }
+        if (dl > '9') {
+            dl = dl - '9' - 1 + 'A'; // 或者dl = dl + 7;
+        }
+        buf2[2 * i] = dh;
+        buf2[2 * i + 1] = dl;
+    }
+
+    printf("size[%lu] buf2: %s\n", strlen(buf2), buf2);
 
     for (i = 0; i < n; i++)
         fncrc(buf, INPUT_BUFFER_LENGTH);

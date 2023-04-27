@@ -2,17 +2,19 @@ cmake_minimum_required(VERSION 3.10)
 
 project(test)
 
-option (SDL_SUPPORT "sdl support on or off" ON)
+option (SDL_SUPPORT "sdl support on or off" OFF)
 
 # 这段代码可以区分操作系统
 message("Identifying the OS...")
 if(WIN32)
+  set(SDL_SUPPORT ON)
   message("This is Windows.")
 elseif(APPLE)
   message("This is MacOS.")
 elseif(UNIX)
   message("This is Linux.")
 endif()
+
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
