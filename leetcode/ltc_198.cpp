@@ -71,7 +71,7 @@ private:
     vector<int> memo;
 };
 
-void test_tree_198()
+void test_tree_198(int argc, char *argv[])
 {
 #define test
 #ifdef test

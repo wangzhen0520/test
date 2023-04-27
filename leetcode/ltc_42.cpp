@@ -49,7 +49,7 @@ public:
     }
 };
 
-void test_trap()
+void test_trap(int argc, char *argv[])
 {
 #define test
 #ifdef test

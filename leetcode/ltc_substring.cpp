@@ -33,7 +33,7 @@ int lengthOfLongestSubstring(string s)
     */
 }
 
-void test_substring()
+void test_substring(int argc, char *argv[])
 {
 #define test
 #ifdef test

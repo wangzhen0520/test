@@ -108,7 +108,7 @@ public:
 using RegulFunc = std::function<std::shared_ptr<OSDProcessorDecorate>()>;
 
 
-void test_autoshared()
+void test_autoshared(int argc, char *argv[])
 {
 #define test
 #ifdef test

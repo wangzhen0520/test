@@ -52,7 +52,7 @@ public:
     }
 };
 
-void test_maxArea()
+void test_maxArea(int argc, char *argv[])
 {
 #define test
 #ifdef test

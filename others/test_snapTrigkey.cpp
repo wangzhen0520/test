@@ -37,7 +37,7 @@ using SnapTrigKey = struct SnapTrigKey {
     }
 };
 
-void test_snapTrigkey()
+void test_snapTrigkey(int argc, char *argv[])
 {
 #define test
 #ifdef test

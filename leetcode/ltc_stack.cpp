@@ -61,7 +61,7 @@ public:
     }
 };
 
-void test_ltc_stack()
+void test_ltc_stack(int argc, char *argv[])
 {
 #define test
 #ifdef test

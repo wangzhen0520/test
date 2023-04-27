@@ -38,7 +38,7 @@ public:
     }
 };
 
-void test_twosum()
+void test_twosum(int argc, char *argv[])
 {
 #define test
 #ifdef test

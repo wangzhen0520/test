@@ -45,7 +45,7 @@ int test_others(int argc, char *argv[])
     std::cout << "test_others" << std::endl;
 
     for (const auto &func : Singleton<LtcContainer>::instance()->GetAction(ACTION_OTHERS)) {
-        func();
+        func(argc, argv);
     }
 
 #if 0

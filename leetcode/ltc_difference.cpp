@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void test_ltc_diff()
+void test_ltc_diff(int argc, char *argv[])
 {
 #define test
 #ifdef test

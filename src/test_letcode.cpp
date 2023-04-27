@@ -9,7 +9,7 @@ int test_letcode(int argc, char *argv[])
     std::cout << "test_letcode" << std::endl;
 
     for (const auto &func : Singleton<LtcContainer>::instance()->GetAction(ACTION_LTC)) {
-        func();
+        func(argc, argv);
     }
 
     return 0;

@@ -92,7 +92,7 @@ ListNode* addTwoNumbers(ListNode* l1, ListNode* l2)
     return l1;
 }
 
-void test_listNode()
+void test_listNode(int argc, char *argv[])
 {
 #define test
 #ifdef test

@@ -8,7 +8,7 @@
 using namespace std;
 using namespace mynamespace;
 
-void test_refactor()
+void test_refactor(int argc, char *argv[])
 {
 #define test
 #ifdef test

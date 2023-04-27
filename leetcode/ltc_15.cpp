@@ -143,7 +143,7 @@ public:
     }
 };
 
-void test_ltc_15()
+void test_ltc_15(int argc, char *argv[])
 {
 #define test
 #ifdef test

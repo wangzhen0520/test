@@ -30,7 +30,7 @@ static void displayInotifyEvent(struct inotify_event *event)
     }
 }
 
-void test_inotify()
+void test_inotify(int argc, char *argv[])
 {
 #define test
 #ifdef test

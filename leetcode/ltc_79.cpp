@@ -83,7 +83,7 @@ public:
     }
 };
 
-void test_tree_79()
+void test_tree_79(int argc, char *argv[])
 {
 #define test
 #ifdef test

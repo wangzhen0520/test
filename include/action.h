@@ -14,7 +14,7 @@ using ACTION_TYPE = enum {
     ACTION_OTHERS,
 };
 
-using ActionFunc = std::function<void()>;
+using ActionFunc = std::function<void(int argc, char *argv[])>;
 
 #define LTC_REGISTER_ACTION(type, func) \
     static RegistAction(REGIST_OCCURRENCES)(type, func)

@@ -137,7 +137,7 @@ int calc(vector<string>& vec)
     return s.top();
 }
 
-void test_calc()
+void test_calc(int argc, char *argv[])
 {
 #define test
 #ifdef test

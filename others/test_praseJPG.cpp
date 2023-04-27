@@ -4,7 +4,7 @@
 
 using namespace std;
 
-void test_praseJPG()
+void test_praseJPG(int argc, char *argv[])
 {
 #define test
 #ifdef test

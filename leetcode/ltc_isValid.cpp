@@ -24,7 +24,7 @@ bool isValid(string s)
     return str.empty();
 }
 
-void test_isvalid()
+void test_isvalid(int argc, char *argv[])
 {
 #define test
 #ifdef test

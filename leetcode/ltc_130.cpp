@@ -94,7 +94,7 @@ public:
     }
 };
 
-void test_uf1()
+void test_uf1(int argc, char *argv[])
 {
 #define test
 #ifdef test
