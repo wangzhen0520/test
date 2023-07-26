@@ -97,4 +97,8 @@ private:
     struct timeval m_operEnd;
     uint32_t m_interval;  // 超时打印
 };
+
+void hexdump(const unsigned char *p, unsigned int len);
+void hexdump2(const unsigned char *p, unsigned int len);
+
 #endif  // UTILS_H

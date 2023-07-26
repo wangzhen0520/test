@@ -36,6 +36,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR})
 # 添加源代码文件夹, 自动扫描所有文件
 aux_source_directory(. DIR_SRCS)
 aux_source_directory(./src DIR_SRCS)
+aux_source_directory(./src/utils DIR_SRCS)
 aux_source_directory(./leetcode DIR_SRCS)
 aux_source_directory(./jsonmerge DIR_SRCS)
 aux_source_directory(./reflector DIR_SRCS)
@@ -65,6 +66,8 @@ set(SDL_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rd/SDL/include)
 set(SDL_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rd/SDL/lib)
 set(SDL_DLL_PATH ${CMAKE_CURRENT_SOURCE_DIR}/3rd/SDL/SDL2.dll)
 
+set(MINIZ_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/3rd/miniz)
+
 # message("1111 "${json-c_BINARY_DIR})
 # message("2222 "${json-c_SOURCE_DIR})
 
@@ -73,15 +76,17 @@ include_directories(
   .
   ./include
   ./src
+  ./src/uitls
   ${JSON_PATH}
   ${JSON_MERGE_PATH}
   ${JSON_C_ROOT_DIR}
   ${JSON_C_INCLUDE_DIR}
   ${CMAKE_CURRENT_SOURCE_DIR}/reflector
   ${SDL_INCLUDE_DIR}
+  ${MINIZ_INCLUDE_DIR}
 )
 
-set(3rd_library jsoncpp json-c)
+set(3rd_library jsoncpp json-c miniz)
 
 if(SDL_SUPPORT)
   list(APPEND 3rd_library SDL2)
@@ -95,6 +100,7 @@ endif()
 # 添加子工程
 # add_subdirectory(json-c-0.15)
 add_subdirectory(3rd/jsoncpp-0.y.z)
+add_subdirectory(3rd/miniz)
 
 link_directories(${LIBRARY_OUTPUT_PATH})
 if(SDL_SUPPORT)

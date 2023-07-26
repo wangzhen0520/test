@@ -4,11 +4,30 @@
 #include <time.h>
 #include <stdint.h>
 
+#include <fstream>
+
 #include "action.h"
+
+#include "miniz.h"
 
 using namespace std;
 
 #define INPUT_BUFFER_LENGTH (1024)
+
+#define WHITE_LIST_MAX (60)
+
+typedef struct
+{
+    uint32_t dest_addr; // 终端设备地址
+    uint8_t floor;      // 部署楼层
+    uint8_t room;       // 户号(烟道号)
+} __attribute__((packed)) ft_uart_payload_of_destaddr_s;
+
+typedef struct
+{
+    uint8_t dest_addr_num; // 终端个数
+    ft_uart_payload_of_destaddr_s dest_addr_info[WHITE_LIST_MAX];
+} __attribute__((packed)) ft_uart_payload_of_whitelist_s;
 
 /*
 CRC16_CCITT：
@@ -144,15 +163,280 @@ static void get_random_buffer(unsigned char *buf, unsigned int len)
         buf[i] = rand() % 256;
 }
 
+void hex_to_ascii(char *dst, char *src, int len)
+{
+    for (int i = 0; i < len; i++) {
+        char dh = '0' + ((src[i] & 0xF0) >> 4);
+        char dl = '0' + (src[i] & 0x0F);
+        if (dh > '9') {
+            dh = dh - '9' - 1 + 'a'; // 或者 dh= dh+ 7;
+        }
+        if (dl > '9') {
+            dl = dl - '9' - 1 + 'a'; // 或者dl = dl + 7;
+        }
+        dst[2 * i] = dh;
+        dst[2 * i + 1] = dl;
+    }
+}
+
+// 商净08F6B64A.png
+int calc_sum(unsigned char *data, int len)
+{
+    unsigned int crc_ret = 0;
+    for (int i = 0; i < len; i++) {
+        crc_ret += data[i];
+    }
+    return crc_ret;
+}
+
+void get_white_list_from_file(const char *filename, ft_uart_payload_of_whitelist_s *data)
+{
+    ifstream readFile;
+    readFile.open(filename, ios::in);
+
+    int index = 0;
+    if (readFile.is_open()) {
+        cout << "Sucess open!" << endl;
+        string str;
+        while (getline(readFile, str)) {
+            // cout << str << endl;
+            const char *delim = " ";
+            char buf[64];
+            snprintf(buf, sizeof(buf), "%s", str.c_str());
+            char *p = strtok(buf, delim);
+            int item = 0;
+            while (p) {
+                if (item == 0) {
+                    data->dest_addr_info[index].room = atoi(p);
+                } else if (item == 1) {
+                    data->dest_addr_info[index].floor = atoi(p);
+                } else {
+                    data->dest_addr_info[index].dest_addr = atoi(p);
+                }
+                p = strtok(NULL, delim);
+                item++;
+            }
+            index++;
+        }
+    } else {
+        cout << "Open Failure!" << endl;
+    }
+    readFile.close();
+    data->dest_addr_num = index;
+}
+
+typedef struct
+{
+    void (*_add)(void *);
+    void (*_replace)(void *, void *);
+    void (*_remove)(void *);
+} function_ops;
+
+void add_to_list(void *param1)
+{
+    ft_uart_payload_of_destaddr_s *addr = (ft_uart_payload_of_destaddr_s *)param1;
+    printf("add addr:%u %u %u\n", addr->room, addr->floor, addr->dest_addr);
+}
+
+void replace_to_list(void *param1, void *param2)
+{
+    ft_uart_payload_of_destaddr_s *addr1 = (ft_uart_payload_of_destaddr_s *)param1;
+    ft_uart_payload_of_destaddr_s *addr2 = (ft_uart_payload_of_destaddr_s *)param2;
+    printf("replace addr1:%u %u %u addr2:%u %u %u\n", addr1->room, addr1->floor, addr1->dest_addr, addr2->room,
+        addr2->floor, addr2->dest_addr);
+}
+
+void remove_to_list(void *param1)
+{
+    ft_uart_payload_of_destaddr_s *addr = (ft_uart_payload_of_destaddr_s *)param1;
+
+    printf("remove addr:%u %u %u\n", addr->room, addr->floor, addr->dest_addr);
+}
+
+void process_white_list(ft_uart_payload_of_whitelist_s *arr1, ft_uart_payload_of_whitelist_s *arr2, function_ops *ops)
+{
+    uint16_t i = 0, j = 0;
+    while (i < arr1->dest_addr_num && j < arr2->dest_addr_num) {
+        if (arr1->dest_addr_info[i].room > arr2->dest_addr_info[j].room) {
+            // remove add1
+            // printf("remove1 addr1:%u %u %u add addr2:%u %u %u\n", arr1->dest_addr_info[i].room,
+            //     arr1->dest_addr_info[i].floor, arr1->dest_addr_info[i].dest_addr, arr2->dest_addr_info[j].room,
+            //     arr2->dest_addr_info[j].floor, arr2->dest_addr_info[j].dest_addr);
+            // printf("add addr2:%u %u %u\n", arr2->dest_addr_info[j].room, arr2->dest_addr_info[j].floor,
+            //     arr2->dest_addr_info[j].dest_addr);
+            if (ops->_add) {
+                ops->_add(&arr2->dest_addr_info[j]);
+            }
+            j++;
+        } else if (arr1->dest_addr_info[i].room < arr2->dest_addr_info[j].room) {
+            // remove add1
+            // printf("remove2 addr1:%u %u %u add addr2:%u %u %u\n", arr1->dest_addr_info[i].room,
+            //     arr1->dest_addr_info[i].floor, arr1->dest_addr_info[i].dest_addr, arr2->dest_addr_info[j].room,
+            //     arr2->dest_addr_info[j].floor, arr2->dest_addr_info[j].dest_addr);
+            // printf("remove2 addr1:%u %u %u \n", arr1->dest_addr_info[i].room, arr1->dest_addr_info[i].floor,
+            //     arr1->dest_addr_info[i].dest_addr);
+            if (ops->_remove) {
+                ops->_remove(&arr1->dest_addr_info[i]);
+            }
+            i++;
+        } else {
+            if (arr1->dest_addr_info[i].floor == arr2->dest_addr_info[j].floor) {
+                if (arr1->dest_addr_info[i].dest_addr == arr2->dest_addr_info[j].dest_addr) {
+                    // the same
+                    // printf("same addr1:%u %u %u addr2:%u %u %u\n", arr1->dest_addr_info[i].room,
+                    //     arr1->dest_addr_info[i].floor, arr1->dest_addr_info[i].dest_addr,
+                    //     arr2->dest_addr_info[j].room, arr2->dest_addr_info[j].floor,
+                    //     arr2->dest_addr_info[j].dest_addr);
+
+                    i++;
+                    j++;
+                } else {
+                    // replace
+                    // printf("replace addr1:%u %u %u addr2:%u %u %u\n", arr1->dest_addr_info[i].room,
+                    //     arr1->dest_addr_info[i].floor, arr1->dest_addr_info[i].dest_addr,
+                    //     arr2->dest_addr_info[j].room, arr2->dest_addr_info[j].floor,
+                    //     arr2->dest_addr_info[j].dest_addr);
+                    if (ops->_replace) {
+                        ops->_replace(&arr1->dest_addr_info[i], &arr2->dest_addr_info[j]);
+                    }
+                    i++;
+                    j++;
+                }
+            } else if (arr1->dest_addr_info[i].floor > arr2->dest_addr_info[j].floor) {
+                // remove
+                // printf("remove3 addr1:%u %u %u\n", arr1->dest_addr_info[i].room, arr1->dest_addr_info[i].floor,
+                //     arr1->dest_addr_info[i].dest_addr);
+                if (ops->_remove) {
+                    ops->_remove(&arr1->dest_addr_info[i]);
+                }
+                i++;
+            } else {
+                // add
+                // printf("add2 addr2:%u %u %u\n", arr2->dest_addr_info[j].room, arr2->dest_addr_info[j].floor,
+                //     arr2->dest_addr_info[j].dest_addr);
+                if (ops->_add) {
+                    ops->_add(&arr2->dest_addr_info[j]);
+                }
+                j++;
+            }
+        }
+    }
+
+    // printf("i:%u j:%u\n", i, j);
+
+    while (i < arr1->dest_addr_num) {
+        // printf("remove addr1:%u %u %u\n", arr1->dest_addr_info[i].room, arr1->dest_addr_info[i].floor,
+        //     arr1->dest_addr_info[i].dest_addr);
+        if (ops->_remove) {
+            ops->_remove(&arr1->dest_addr_info[i]);
+        }
+        i++;
+    }
+
+    while (j < arr2->dest_addr_num) {
+        // printf("add addr2:%u %u %u\n", arr2->dest_addr_info[j].room, arr2->dest_addr_info[j].floor,
+        //     arr2->dest_addr_info[j].dest_addr);
+        if (ops->_add) {
+            ops->_add(&arr2->dest_addr_info[j]);
+        }
+        j++;
+    }
+}
+
+void process_white_list2(ft_uart_payload_of_whitelist_s *arr1, ft_uart_payload_of_whitelist_s *arr2, function_ops *ops)
+{
+    uint16_t i = 0, j = 0;
+    while (i < arr1->dest_addr_num && j < arr2->dest_addr_num) {
+        if (arr1->dest_addr_info[i].room > arr2->dest_addr_info[j].room ||
+            (arr1->dest_addr_info[i].room == arr2->dest_addr_info[j].room &&
+                arr1->dest_addr_info[i].floor < arr2->dest_addr_info[j].floor)) {
+            if (ops->_add) {
+                ops->_add(&arr2->dest_addr_info[j]);
+            }
+            j++;
+        } else if (arr1->dest_addr_info[i].room < arr2->dest_addr_info[j].room ||
+                   (arr1->dest_addr_info[i].room == arr2->dest_addr_info[j].room &&
+                       arr1->dest_addr_info[i].floor > arr2->dest_addr_info[j].floor)) {
+            if (ops->_remove) {
+                ops->_remove(&arr1->dest_addr_info[i]);
+            }
+            i++;
+        } else if (arr1->dest_addr_info[i].floor == arr2->dest_addr_info[j].floor) {
+            if (arr1->dest_addr_info[i].dest_addr != arr2->dest_addr_info[j].dest_addr) {
+                if (ops->_replace) {
+                    ops->_replace(&arr1->dest_addr_info[i], &arr2->dest_addr_info[j]);
+                }
+            }
+            i++;
+            j++;
+        }
+    }
+
+    while (i < arr1->dest_addr_num) {
+        if (ops->_remove) {
+            ops->_remove(&arr1->dest_addr_info[i]);
+        }
+        i++;
+    }
+
+    while (j < arr2->dest_addr_num) {
+        if (ops->_add) {
+            ops->_add(&arr2->dest_addr_info[j]);
+        }
+        j++;
+    }
+}
+
 void test_crc(int argc, char *argv[])
 {
-#define test
+// #define test
 #ifdef test
     return;
 #else
     cout << __func__ << endl;
 #endif
 
+#if 0
+    // uint8_t buf[] = {0xf4, 0xf5, 0x08, 0x01, 0x08, 0x09, 0x10, 0x00, 0x00, 0x00, 0x13}; // 2320
+    // uint8_t buf[] = {0xf4, 0xf5, 0x08, 0x01, 0x08, 0x09, 0x11, 0x00, 0x00, 0x00, 0x14}; // 2321
+    uint8_t buf[] = {0xf4, 0xf5, 07, 0x01, 0x03, 0x05, 0x12, 0x00, 0xcb, 0xd1}; // 2321
+    // uint8_t buf[] = {0xf4, 0xf5, 0x4d, 0x02, 0x08, 0x09, 0x10, 0x00, 0x00, 0x00, 0x83, 0x00, 0x08, 0x14, 0x00, 0x00,
+    //     0x00, 0x00, 0x00, 0x50, 0x00, 0x4f, 0x53, 0x00, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01,
+    //     0x0e, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    //     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0x01,
+    //     0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x63, 0x00, 0x00, 0xc4};
+    uint16_t crc = calc_sum(buf, sizeof(buf) - 1);
+    printf("%02x \n", crc & 0xff);
+
+    crc = MODBUS_CRC16_v3(buf, sizeof(buf) - 2);
+    printf("%02x %02x\n", crc & 0xff, (crc >> 8) & 0xff);
+
+    char dst[sizeof(buf) * 2 + 1] = {0};
+    hex_to_ascii(dst, (char *)buf, sizeof(buf));
+
+    printf("%d %s\n", strlen(dst), dst);
+#endif
+
+#if 1
+    uint8_t buf[] = {0xf4, 0xf5, 0x00, 0x4d, 0x02, 0x02, 0x09, 0x09, 0x13, 0x00, 0x01, 0x00, 0x03, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x01, 0x01, 0x6d, 0x01, 0x02, 0x2d,
+        0x5f, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x1e, 0x00, 0x00, 0x00, 0x10, 0x00, 0x01, 0x00, 0x01, 0x00, 0x02,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xf2, 0x01, 0x00, 0x00, 0x00};
+
+    int size = sizeof(buf) / sizeof(buf[0]);
+
+    uint16_t crc = MODBUS_CRC16_v3(buf, size - 2);
+    printf("%02x %02x\n", crc & 0xff, (crc >> 8) & 0xff);
+
+    buf[size - 2] = (crc >> 8) & 0xff;
+    buf[size - 1] = crc & 0xff;
+
+    hexdump2(buf, size);
+
+#endif
+
+#if 0
     unsigned long i = 0;
     unsigned long n = 0;
     unsigned char buf[INPUT_BUFFER_LENGTH] = {0};
@@ -191,24 +475,87 @@ void test_crc(int argc, char *argv[])
     }
     printf("\n");
 
-    char buf2[INPUT_BUFFER_LENGTH * 2 + 1] = {0};
-    for (int i = 0; i < sizeof(buf); i++) {
-        char dh = '0' + ((buf[i] & 0xF0) >> 4);
-        char dl = '0' + (buf[i] & 0x0F);
-        if (dh > '9') {
-            dh = dh - '9' - 1 + 'A'; // 或者 dh= dh+ 7;
-        }
-        if (dl > '9') {
-            dl = dl - '9' - 1 + 'A'; // 或者dl = dl + 7;
-        }
-        buf2[2 * i] = dh;
-        buf2[2 * i + 1] = dl;
+    char dst[INPUT_BUFFER_LENGTH * 2 + 1] = {0};
+    hex_to_ascii(dst, (char *)buf, INPUT_BUFFER_LENGTH);
+    // printf("size[%lu] dst: %s\n", strlen(dst), dst);
+
+    uLong src_len = INPUT_BUFFER_LENGTH;
+    uLong cmp_len = compressBound(src_len);
+    uLong uncomp_len = src_len;
+    mz_uint8 *pCmp = (mz_uint8 *)malloc((size_t)cmp_len);
+    mz_uint8 *pUncomp = (mz_uint8 *)malloc((size_t)src_len);
+    if ((!pCmp) || (!pUncomp)) {
+        printf("Out of memory!\n");
+        return;
     }
 
-    printf("size[%lu] buf2: %s\n", strlen(buf2), buf2);
+    int cmp_status = compress(pCmp, &cmp_len, (const unsigned char *)buf, src_len);
+    if (cmp_status != Z_OK) {
+        printf("compress() failed!\n");
+        free(pCmp);
+        free(pUncomp);
+        return;
+    }
+
+    printf("Compressed from %u to %u bytes\n", (mz_uint32)src_len, (mz_uint32)cmp_len);
+    for (int i = 0; i < cmp_len; i++) {
+        printf("%02x ", pCmp[i]);
+    }
+    printf("\n");
+
+    cmp_status = uncompress(pUncomp, &uncomp_len, pCmp, cmp_len);
+    if (cmp_status != Z_OK) {
+        printf("uncompress failed!\n");
+        free(pCmp);
+        free(pUncomp);
+        return;
+    }
+    printf("Decompressed from %u to %u bytes\n", (mz_uint32)cmp_len, (mz_uint32)uncomp_len);
+    for (int i = 0; i < uncomp_len; i++) {
+        printf("%02x ", pUncomp[i]);
+    }
+    printf("\n");
+
+    if ((uncomp_len != src_len) || (memcmp(pUncomp, buf, (size_t)src_len))) {
+        printf("Decompression failed!\n");
+        free(pCmp);
+        free(pUncomp);
+        return;
+    }
+
+    free(pCmp);
+    free(pUncomp);
 
     for (i = 0; i < n; i++)
         fncrc(buf, INPUT_BUFFER_LENGTH);
+#endif
+
+#if 0
+    ft_uart_payload_of_whitelist_s orig = {};
+    ft_uart_payload_of_whitelist_s newer = {};
+    get_white_list_from_file("../addr1.txt", &orig);
+    get_white_list_from_file("../addr2.txt", &newer);
+
+    for (uint16_t i = 0; i < orig.dest_addr_num; i++) {
+        printf("[%u] addr1: %u %u %u\n", i, orig.dest_addr_info[i].room, orig.dest_addr_info[i].floor,
+            orig.dest_addr_info[i].dest_addr);
+    }
+    printf("\n");
+
+    for (uint16_t i = 0; i < newer.dest_addr_num; i++) {
+        printf("[%u] addr2: %u %u %u\n", i, newer.dest_addr_info[i].room, newer.dest_addr_info[i].floor,
+            newer.dest_addr_info[i].dest_addr);
+    }
+
+    printf("\n");
+
+    function_ops funcs = {
+        ._add = add_to_list,
+        ._replace = replace_to_list,
+        ._remove = remove_to_list,
+    };
+    process_white_list2(&orig, &newer, &funcs);
+#endif
 }
 
 LTC_REGISTER_ACTION(ACTION_OTHERS, test_crc);

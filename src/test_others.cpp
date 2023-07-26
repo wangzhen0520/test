@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <string.h>
 
 #include "action.h"
 
@@ -38,6 +39,83 @@ void test_for_duplicate(std::string &str)
     //         break;
     //     str.push_back(it);
     // }
+}
+
+int parse_http_url(const char *url, char *host, size_t maxhost_len, char *path, size_t max_path_len, int *port)
+{
+    char scheme[8];
+    size_t max_scheme_len = sizeof(scheme);
+
+    char *scheme_ptr = (char *)url;
+    char *host_ptr = (char *)strstr(url, "://");
+    size_t host_len = 0;
+    size_t path_len;
+    char *port_ptr;
+    char *path_ptr;
+    char *fragment_ptr;
+
+    if (host_ptr == NULL) {
+        printf("Could not find http char\n");
+        memcpy(scheme, "http", 4);
+        scheme[4] = '\0';
+        host_ptr = scheme_ptr;
+    } else {
+        if (max_scheme_len < host_ptr - scheme_ptr + 1) { /* including NULL-terminating char */
+            printf("Scheme str is too small (%d >= %d)", max_scheme_len, host_ptr - scheme_ptr + 1);
+            return -1;
+        }
+        memcpy(scheme, scheme_ptr, host_ptr - scheme_ptr);
+        scheme[host_ptr - scheme_ptr] = '\0';
+
+        host_ptr += 3;
+    }
+
+    port_ptr = strchr(host_ptr, ':');
+    if (port_ptr != NULL) {
+        uint16_t tport;
+        host_len = port_ptr - scheme_ptr;
+        port_ptr++;
+        if (sscanf(port_ptr, "%hu", &tport) != 1) {
+            printf("Could not find port");
+            return -1;
+        }
+        *port = (int)tport;
+    }
+
+    path_ptr = strchr(host_ptr, '/');
+    if (host_len == 0) {
+        host_len = path_ptr - scheme_ptr;
+    }
+
+    if (maxhost_len < host_len + 1) { /* including NULL-terminating char */
+        printf("Host str is too small (%d >= %d)", maxhost_len, host_len + 1);
+        return -1;
+    }
+    memcpy(host, scheme_ptr, host_len);
+    host[host_len] = '\0';
+
+    fragment_ptr = strchr(host_ptr, '#');
+    if (fragment_ptr != NULL) {
+        path_len = fragment_ptr - path_ptr;
+    } else {
+        if (path_ptr != NULL) {
+            path_len = strlen(path_ptr);
+        } else {
+            path_len = 0;
+        }
+    }
+
+    if (max_path_len < path_len + 1) { /* including NULL-terminating char */
+        printf("Path str is too small (%d >= %d)", max_path_len, path_len + 1);
+        return -1;
+    }
+
+    if (path_ptr != NULL && path_len > 0) {
+        memcpy(path, path_ptr, path_len);
+        path[path_len] = '\0';
+    }
+
+    return 0;
 }
 
 int test_others(int argc, char *argv[])
@@ -130,5 +208,64 @@ int test_others(int argc, char *argv[])
     test_for_duplicate(str);
     cout << str << endl;
 #endif
+
+#if 0
+    char str[] = "*ICCID: \"898604D3102280671673\"";
+
+    if (0 == strncmp(str, "*ICCID", 6)) {
+        char *result = strtok(str, ":\"");
+        while (result != NULL) {
+            printf("222 %s\n", result);
+            result = strtok(NULL, ":\"");
+        }
+    }
+#endif
+
+#if 0
+    // unsigned char buf[] = {0xf4, 0xf5, 0x4d, 0x02, 0x08, 0x09, 0x10, 0x00, 0x00, 0x00, 0x83, 0x00, 0x08, 0x14, 0x00,
+    //     0x00, 0x00, 0x00, 0x00, 0x50, 0x00, 0x4f, 0x53, 0x00, 0x3f, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    //     0x01, 0x0e, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    //     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02,
+    //     0x01, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x63};
+    unsigned char buf[] = {0xf4, 0x00, 0x00, 0x63, 0x00};
+    hexdump(buf, sizeof(buf));
+#endif
+
+#if 0
+    char src[] = "FIKS-CAT1-CA305";
+    unsigned char buf[4] = {};
+    const char *delim = "-";
+    uint32_t item = 0;
+    char *result = strtok(src, delim);
+    while (result != NULL) {
+        if (item == 2) {
+            printf("ver: %s\n", result);
+            // char *ptr = strstr(result, "CA");
+            // printf("ptr: %s\n", ptr + 2);
+            uint16_t ver = atoi(result + 2);
+            buf[0] = (ver >> 8) & 0xff;
+            buf[1] = ver & 0xff;
+        }
+        item++;
+        result = strtok(NULL, delim);
+    }
+
+    hexdump(buf, sizeof(buf));
+
+#endif
+
+
+#if 0
+    char *url = "http://ota-test.fotile.com/fotileAdminSystem/normalizationUpgrade.do?package=fotile.fiks.cat1.firmware&productId=&version=FIKS-CAT1-CA305&mac=864606062753370&isCustom=1&isEncryption=0";
+    char host[256] = {0};
+    char path[256] = {0};
+    int port = 0;
+    int ret = parse_http_url(url, host, sizeof(host), path, sizeof(path), &port);
+
+    printf("host: %s\n", host);
+    printf("%d path: %s\n", strlen(path), path);
+    printf("port: %d\n", port);
+#endif
+
     return 0;
 }
