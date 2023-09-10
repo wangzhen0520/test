@@ -51,7 +51,7 @@
                 // 2021-01-21更新：我在32位的win7上发现，vscode自己又不转义了
                 // 所以如果以下三个斜杠不行的话，大家手动改成一个斜杠就好，即\"Unix Makefiles\"
                 // 后面我给的小程序默认写的是3个
-                "\\\"MinGW Makefiles\\\"",
+                "\"MinGW Makefiles\"",
                 "../" // ../ 表示build文件夹的上级目录，CMakeLists.txt就放在上级目录中
             ],
             "options": {
