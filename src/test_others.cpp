@@ -118,6 +118,38 @@ int parse_http_url(const char *url, char *host, size_t maxhost_len, char *path, 
     return 0;
 }
 
+void test_strstr_str()
+{
+    char src[] = "v=0\no=MetaRtc 140657880452088 2 IN IP4 0.0.0.0\ns=MetaRtcSession\nt=0 0\na=ice-lite\na=group:BUNDLE "
+                 "0 1\na=msid-semantic: WMS live/livestream\nm=audio 9 UDP/TLS/RTP/SAVPF 111\nc=IN IP4 "
+                 "0.0.0.0\na=ice-ufrag:j733\na=ice-pwd:6n93807my3s4q1epo5937z30y65xk80q\na=fingerprint:sha-256 "
+                 "6A:42:90:CE:64:2E:D6:28:18:0E:41:E1:C6:5B:59:B7:E4:24:53:12:71:17:9C:2D:0C:16:CF:70:E1:1A:96:61\na="
+                 "setup:active\na=mid:0\na=recvonly\na=rtcp-mux\na=rtcp-rsize\na=rtpmap:111 opus/48000/2\na=fmtp:111 "
+                 "minptime=10\na=ssrc:117080692 cname:metaRTC\na=ssrc:117080692 msid:metaRTC "
+                 "81x0g6ge-31c3-9630-6m9c-ol1e9fre8t77\na=ssrc:117080692 mslabel:metaRTC\na=ssrc:117080692 "
+                 "label:81x0g6ge-31c3-9630-6m9c-ol1e9fre8t77\nm=video 9 UDP/TLS/RTP/SAVPF 106\nc=IN IP4 "
+                 "0.0.0.0\na=ice-ufrag:j733\na=ice-pwd:6n93807my3s4q1epo5937z30y65xk80q\na=fingerprint:sha-256 "
+                 "6A:42:90:CE:64:2E:D6:28:18:0E:41:E1:C6:5B:59:B7:E4:24:53:12:71:17:9C:2D:0C:16:CF:70:E1:1A:96:61\na="
+                 "setup:active\na=mid:1\na=extmap:3 "
+                 "http://www.ietf.org/id/"
+                 "draft-holmer-rmcat-transport-wide-cc-extensions-01\na=recvonly\na=rtcp-mux\na=rtcp-rsize\na=rtpmap:"
+                 "106 H264/90000\na=rtcp-fb:106 transport-cc\na=rtcp-fb:106 nack\na=rtcp-fb:106 nack pli\na=fmtp:106 "
+                 "level-asymmetry-allowed=1;packetization-mode=1;profile-level-id=42e01f\na=ssrc:117080693 "
+                 "cname:metaRTC\na=ssrc:117080693 msid:metaRTC 4034h380-a0nz-36zj-2466-9dv82m2lv0s5\na=ssrc:117080693 "
+                 "mslabel:metaRTC\na=ssrc:117080693 label:4034h380-a0nz-36zj-2466-9dv82m2lv0s5\n";
+
+    char delim[] = "\n";
+
+    char *p = strtok(src, delim);
+    int i = 0;
+    while (p) {
+        printf("[%d] len: %d p: %s\n", i, strlen(p), p);
+
+        i++;
+        p = strtok(NULL, delim);
+    }
+}
+
 int test_others(int argc, char *argv[])
 {
     std::cout << "test_others" << std::endl;
@@ -254,7 +286,6 @@ int test_others(int argc, char *argv[])
 
 #endif
 
-
 #if 0
     char *url = "http://ota-test.fotile.com/fotileAdminSystem/normalizationUpgrade.do?package=fotile.fiks.cat1.firmware&productId=&version=FIKS-CAT1-CA305&mac=864606062753370&isCustom=1&isEncryption=0";
     char host[256] = {0};
@@ -265,6 +296,23 @@ int test_others(int argc, char *argv[])
     printf("host: %s\n", host);
     printf("%d path: %s\n", strlen(path), path);
     printf("port: %d\n", port);
+#endif
+
+#if 0
+    const uint32_t UPDATE_MAX_RANDOM = 3 * 60 * 60; // OTA升级时间区间 [0~3点]
+    char *mac_arry[] = {"866156054226108", "866156054230159"};
+
+    for (size_t i = 0; i < sizeof(mac_arry) / sizeof(mac_arry[0]); i++) {
+        char *mac = mac_arry[i] + ((strlen(mac_arry[0]) > 6) ? (strlen(mac_arry[0]) - 6) : 0);
+        uint32_t random_time =
+            (((mac[5] ^ mac[0]) << 16) + ((mac[4] ^ mac[1]) << 8) + (mac[3] ^ mac[2])) % (UPDATE_MAX_RANDOM);
+
+        printf("random_time: %u\n", random_time);
+    }
+#endif
+
+#if 0
+    test_strstr_str();
 #endif
 
     return 0;

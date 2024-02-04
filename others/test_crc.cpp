@@ -29,6 +29,23 @@ typedef struct
     ft_uart_payload_of_destaddr_s dest_addr_info[WHITE_LIST_MAX];
 } __attribute__((packed)) ft_uart_payload_of_whitelist_s;
 
+#define ROUTE_LIST_MAX (12)
+typedef struct
+{
+    uint8_t floor;                        // 部署楼层
+    uint8_t room;                         // 户号(烟道号)
+    uint32_t dest_addr;                   // 终端设备地址
+    uint8_t router_num;                   // 路由器数量
+    uint32_t router_addr[ROUTE_LIST_MAX]; // 共 12 级路由器地址, 从上往下排列, 后续没有的填 0 地址
+} __attribute__((packed)) ft_uart_payload_of_route_s;
+
+typedef struct
+{
+    uint32_t gateway_addr;  // 网关地址
+    uint8_t route_list_num; // 路由个数
+    ft_uart_payload_of_route_s route_info[WHITE_LIST_MAX];
+} __attribute__((packed)) ft_uart_payload_of_route_list_s;
+
 /*
 CRC16_CCITT：
 多项式x^16+x^12+x^5+1（0x1021），初始值0x0000，低位在前，高位在后，结果与0x0000异或；
@@ -225,6 +242,61 @@ void get_white_list_from_file(const char *filename, ft_uart_payload_of_whitelist
     data->dest_addr_num = index;
 }
 
+void get_route_list_from_file(const char *filename, ft_uart_payload_of_route_list_s *data)
+{
+    ifstream readFile;
+    readFile.open(filename, ios::in);
+
+    int index = 0;
+    if (readFile.is_open()) {
+        cout << "Sucess open!" << endl;
+        string str;
+        while (getline(readFile, str)) {
+            // cout << str << endl;
+            const char *delim = " ";
+            char buf[512];
+            snprintf(buf, sizeof(buf), "%s", str.c_str());
+            char *p = strtok(buf, delim);
+            int item = 0;
+            int sub_item_num = 0;
+            while (p) {
+                if (item == 0) {
+                    data->route_info[index].room = atoi(p);
+                } else if (item == 1) {
+                    data->route_info[index].floor = atoi(p);
+                } else if (item == 2) {
+                    // data->route_info[index].dest_addr = atoi(p);
+                    sscanf(p, "%x", &data->route_info[index].dest_addr);
+                } else {
+                    // data->route_info[index].router_addr[sub_item_num] = atoi(p);
+                    sscanf(p, "%x", &data->route_info[index].router_addr[sub_item_num]);
+                    sub_item_num++;
+                }
+                p = strtok(NULL, delim);
+                item++;
+            }
+            data->route_info[index].router_num = sub_item_num;
+            index++;
+        }
+    } else {
+        cout << "Open Failure!" << endl;
+    }
+    readFile.close();
+    data->route_list_num = index;
+}
+
+void show_route_info(ft_uart_payload_of_route_list_s *data)
+{
+    for (uint16_t i = 0; i < data->route_list_num; i++) {
+        ft_uart_payload_of_route_s *p = &data->route_info[i];
+        printf("%2u %2u %04X ", p->room, p->floor, p->dest_addr);
+        for (uint16_t j = 0; j < p->router_num; j++) {
+            printf("%04X ", p->router_addr[j]);
+        }
+        printf("\n");
+    }
+}
+
 typedef struct
 {
     void (*_add)(void *);
@@ -355,8 +427,8 @@ void process_white_list2(ft_uart_payload_of_whitelist_s *arr1, ft_uart_payload_o
             }
             j++;
         } else if (arr1->dest_addr_info[i].room < arr2->dest_addr_info[j].room ||
-                   (arr1->dest_addr_info[i].room == arr2->dest_addr_info[j].room &&
-                       arr1->dest_addr_info[i].floor > arr2->dest_addr_info[j].floor)) {
+            (arr1->dest_addr_info[i].room == arr2->dest_addr_info[j].room &&
+                arr1->dest_addr_info[i].floor > arr2->dest_addr_info[j].floor)) {
             if (ops->_remove) {
                 ops->_remove(&arr1->dest_addr_info[i]);
             }
@@ -557,6 +629,12 @@ void test_crc(int argc, char *argv[])
     process_white_list2(&orig, &newer, &funcs);
 #endif
 
+#if 0
+    ft_uart_payload_of_route_list_s orig = {};
+    get_route_list_from_file("../router.txt", &orig);
+    show_route_info(&orig);
+
+#endif
 }
 
 LTC_REGISTER_ACTION(ACTION_OTHERS, test_crc);
