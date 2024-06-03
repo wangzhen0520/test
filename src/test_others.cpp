@@ -61,7 +61,7 @@ int parse_http_url(const char *url, char *host, size_t maxhost_len, char *path, 
         host_ptr = scheme_ptr;
     } else {
         if (max_scheme_len < host_ptr - scheme_ptr + 1) { /* including NULL-terminating char */
-            printf("Scheme str is too small (%d >= %d)", max_scheme_len, host_ptr - scheme_ptr + 1);
+            printf("Scheme str is too small (%lu >= %lu)", max_scheme_len, host_ptr - scheme_ptr + 1);
             return -1;
         }
         memcpy(scheme, scheme_ptr, host_ptr - scheme_ptr);
@@ -88,7 +88,7 @@ int parse_http_url(const char *url, char *host, size_t maxhost_len, char *path, 
     }
 
     if (maxhost_len < host_len + 1) { /* including NULL-terminating char */
-        printf("Host str is too small (%d >= %d)", maxhost_len, host_len + 1);
+        printf("Host str is too small (%lu >= %lu)", maxhost_len, host_len + 1);
         return -1;
     }
     memcpy(host, scheme_ptr, host_len);
@@ -106,7 +106,7 @@ int parse_http_url(const char *url, char *host, size_t maxhost_len, char *path, 
     }
 
     if (max_path_len < path_len + 1) { /* including NULL-terminating char */
-        printf("Path str is too small (%d >= %d)", max_path_len, path_len + 1);
+        printf("Path str is too small (%lu >= %lu)", max_path_len, path_len + 1);
         return -1;
     }
 
@@ -143,7 +143,7 @@ void test_strstr_str()
     char *p = strtok(src, delim);
     int i = 0;
     while (p) {
-        printf("[%d] len: %d p: %s\n", i, strlen(p), p);
+        printf("[%d] len: %d p: %s\n", i, (int)strlen(p), p);
 
         i++;
         p = strtok(NULL, delim);
