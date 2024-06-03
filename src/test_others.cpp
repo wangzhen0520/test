@@ -150,6 +150,60 @@ void test_strstr_str()
     }
 }
 
+struct HomeRightMenu
+{
+    char name[16];
+    bool isShow;
+};
+
+#define HOME_RIGHT_MENU_MAX_NUM 10
+
+struct data {
+    int homeRightmenuNum;
+    struct HomeRightMenu homeRightMenuList[HOME_RIGHT_MENU_MAX_NUM];
+};
+struct data gs_data = {};
+
+struct data *ptr = &gs_data;
+
+void addHomeRightMenu(const char *name)
+{
+    if (ptr->homeRightmenuNum >= HOME_RIGHT_MENU_MAX_NUM) {
+        return;
+    }
+
+    strcpy(ptr->homeRightMenuList[ptr->homeRightmenuNum].name, name);
+    ptr->homeRightMenuList[ptr->homeRightmenuNum].isShow = true;
+    ptr->homeRightmenuNum++;
+}
+
+void deleteHomeRightMenu(const char *name)
+{
+    if (ptr->homeRightmenuNum <= 0) {
+        return;
+    }
+
+    int find_idx = 0;
+    for (int i = 0; i < ptr->homeRightmenuNum; i++) {
+        if (strcmp(name, ptr->homeRightMenuList[i].name) == 0) {
+            find_idx = i;
+        } else {
+            strcpy(ptr->homeRightMenuList[find_idx].name, ptr->homeRightMenuList[i].name);
+            ptr->homeRightMenuList[find_idx].isShow = ptr->homeRightMenuList[i].isShow;
+            find_idx++;
+        }
+    }
+    ptr->homeRightmenuNum--;
+}
+
+void showHomeRightMenu(void)
+{
+    printf("\n--------------------------\n");
+    for (int i = 0; i < ptr->homeRightmenuNum; i++) {
+        printf("[%d] %s\n", i, ptr->homeRightMenuList[i].name);
+    }
+}
+
 int test_others(int argc, char *argv[])
 {
     std::cout << "test_others" << std::endl;
@@ -313,6 +367,20 @@ int test_others(int argc, char *argv[])
 
 #if 0
     test_strstr_str();
+#endif
+
+#if 0
+    addHomeRightMenu("1");
+    addHomeRightMenu("2");
+    addHomeRightMenu("3");
+    addHomeRightMenu("4");
+
+    showHomeRightMenu();
+
+    deleteHomeRightMenu("2");
+
+    showHomeRightMenu();
+
 #endif
 
     return 0;
