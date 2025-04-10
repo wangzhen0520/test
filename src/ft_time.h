@@ -1,5 +1,7 @@
-#ifndef __TIME_WRAPPER_H__
-#define __TIME_WRAPPER_H__
+#ifdef __linux__
+
+#ifndef __FT_TIME_WRAPPER_H__
+#define __FT_TIME_WRAPPER_H__
 
 #include <cstdint>
 #include <string>
@@ -153,3 +155,5 @@ public:
 
 };     // namespace FT
 #endif // __TIME_WRAPPER_H__
+
+#endif // __linux__

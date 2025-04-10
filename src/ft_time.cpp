@@ -1,16 +1,16 @@
+#ifdef __linux__
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
-#include <sys/times.h>
 #include <unistd.h>
 #include <algorithm>
-
+#include <unistd.h>
 #include <string.h>
-
+#include <time.h>
 #include <mutex>
 #include <string>
 
-#include "Time.h"
+#include "ft_time.h"
 
 namespace {
 static bool enableTimezone = true;
@@ -759,3 +759,4 @@ parse_error:
 }
 
 } // namespace FT
+#endif // __linux__
